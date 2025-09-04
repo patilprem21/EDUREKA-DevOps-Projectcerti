@@ -18,18 +18,24 @@ pipeline {
             }
         }
         
-        stage('Job 1: Verify Test Server') {
+        stage('Job 1: Install Puppet Agent') {
             steps {
                 script {
-                    echo 'Verifying test-server is ready...'
+                    echo 'Installing Puppet Agent on test-server...'
                     sh '''
                         # Check if test-server container exists and is running
                         if docker ps | grep -q test-server; then
-                            echo "test-server container is running"
-                            docker exec test-server echo "Container is accessible"
                             docker exec test-server apt-get update
-                            echo "Package manager is working"
-                            echo "Test server verification completed"
+                            
+                            # Add Puppet repository
+                            docker exec test-server apt-get install -y wget ca-certificates
+                            docker exec test-server wget https://apt.puppet.com/puppet7-release-focal.deb
+                            docker exec test-server dpkg -i puppet7-release-focal.deb
+                            docker exec test-server apt-get update
+                            
+                            # Install Puppet Agent
+                            docker exec test-server apt-get install -y puppet-agent
+                            echo "Puppet Agent installation completed"
                         else
                             echo "ERROR: test-server container not found or not running!"
                             echo "Available containers:"
