@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         TEST_SERVER = 'test-server'
-        GIT_REPO = 'https://github.com/edureka-devops/projCert.git'
+        GIT_REPO = 'https://github.com/patilprem21/EDUREKA-DevOps-Projectcerti.git'
         DOCKER_IMAGE = 'devopsedu/webapp'
     }
     
