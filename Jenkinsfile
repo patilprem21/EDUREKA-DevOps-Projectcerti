@@ -8,15 +8,32 @@ pipeline {
     }
     
     stages {
+        stage('Check Docker Access') {
+            steps {
+                script {
+                    echo 'Checking Docker access...'
+                    sh 'docker --version'
+                    sh 'docker ps'
+                }
+            }
+        }
+        
         stage('Job 1: Install Puppet Agent') {
             steps {
                 script {
-                    echo 'Installing Puppet Agent on slave node...'
+                    echo 'Installing Puppet Agent on test-server...'
                     sh '''
-                        # Install Puppet agent directly on test-server
-                        docker exec test-server apt-get update
-                        docker exec test-server apt-get install -y puppet-agent
-                        echo "Puppet Agent installation completed"
+                        # Check if test-server container exists and is running
+                        if docker ps | grep -q test-server; then
+                            docker exec test-server apt-get update
+                            docker exec test-server apt-get install -y puppet-agent
+                            echo "Puppet Agent installation completed"
+                        else
+                            echo "ERROR: test-server container not found or not running!"
+                            echo "Available containers:"
+                            docker ps -a
+                            exit 1
+                        fi
                     '''
                 }
             }

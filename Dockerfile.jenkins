@@ -28,6 +28,8 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /
 # Add jenkins user to docker group
 RUN usermod -aG docker jenkins
 
+RUN chmod 666 /var/run/docker.sock || true
+
 # Install Jenkins plugins
 RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt || true
 

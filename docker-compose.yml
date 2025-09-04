@@ -16,6 +16,7 @@ services:
       - ./ansible:/var/jenkins_home/ansible
     environment:
       - JENKINS_OPTS=--httpPort=8080
+    user: root
     networks:
       - devops-network
 
