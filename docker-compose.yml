@@ -33,8 +33,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock  # Share Docker socket
     command: >
       bash -c "
+        sleep 10 &&
         apt-get update &&
-        apt-get install -y openssh-server python3 &&
+        apt-get install -y openssh-server python3-minimal &&
         mkdir -p /var/run/sshd &&
         echo 'root:password' | chpasswd &&
         sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config &&

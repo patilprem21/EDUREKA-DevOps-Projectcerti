@@ -18,16 +18,18 @@ pipeline {
             }
         }
         
-        stage('Job 1: Install Puppet Agent') {
+        stage('Job 1: Verify Test Server') {
             steps {
                 script {
-                    echo 'Installing Puppet Agent on test-server...'
+                    echo 'Verifying test-server is ready...'
                     sh '''
                         # Check if test-server container exists and is running
                         if docker ps | grep -q test-server; then
+                            echo "test-server container is running"
+                            docker exec test-server echo "Container is accessible"
                             docker exec test-server apt-get update
-                            docker exec test-server apt-get install -y puppet-agent
-                            echo "Puppet Agent installation completed"
+                            echo "Package manager is working"
+                            echo "Test server verification completed"
                         else
                             echo "ERROR: test-server container not found or not running!"
                             echo "Available containers:"
