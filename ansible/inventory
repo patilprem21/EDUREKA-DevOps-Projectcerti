@@ -1,0 +1,9 @@
+[test-server]
+test-server ansible_host=test-server ansible_user=root ansible_ssh_pass=password ansible_connection=paramiko ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' ansible_ssh_extra_args='-o PreferredAuthentications=password'
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_become=yes
+ansible_become_method=sudo
+ansible_become_user=root
+ansible_become_password=password

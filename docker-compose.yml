@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Master VM - Jenkins Server
+  jenkins-master:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    container_name: jenkins-master
+    ports:
+      - "8082:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./ansible:/var/jenkins_home/ansible
+    environment:
+      - JENKINS_OPTS=--httpPort=8080
+    networks:
+      - devops-network
+
+  # Slave VM - Test Server
+  test-server:
+    image: ubuntu:20.04
+    container_name: test-server
+    privileged: true  # Allow Docker-in-Docker
+    ports:
+      - "8081:80"
+    volumes:
+      - ./ansible:/ansible
+      - ./scripts:/scripts
+      - /var/run/docker.sock:/var/run/docker.sock  # Share Docker socket
+    command: >
+      bash -c "
+        apt-get update &&
+        apt-get install -y openssh-server python3 &&
+        mkdir -p /var/run/sshd &&
+        echo 'root:password' | chpasswd &&
+        sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config &&
+        /usr/sbin/sshd -D
+      "
+    networks:
+      - devops-network
+
+volumes:
+  jenkins_home:
+
+networks:
+  devops-network:
+    driver: bridge
